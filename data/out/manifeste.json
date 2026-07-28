@@ -1,0 +1,13 @@
+{
+  "sources": [
+    {
+      "nom": "prenoms",
+      "millesime": 2025,
+      "url": "https://www.insee.fr/fr/statistiques/fichier/8595130/prenoms-2025.parquet",
+      "fichier": "prenoms-2025.parquet",
+      "octets": 18946679,
+      "sha256": "f78a41de5b4aa77af3f4ba2fbf29fcdf428250ae9a49a019fb61246269075070",
+      "date_telechargement": "2026-07-28T07:50:18+00:00"
+    }
+  ]
+}

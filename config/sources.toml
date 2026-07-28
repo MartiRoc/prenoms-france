@@ -1,0 +1,5 @@
+
+[source.prenoms]
+url = "https://www.insee.fr/fr/statistiques/fichier/8595130/prenoms-2025.parquet"
+millesime = 2025
+fichier = "prenoms-2025.parquet"
