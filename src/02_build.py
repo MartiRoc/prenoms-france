@@ -13,6 +13,8 @@ from pathlib import Path
 
 import duckdb
 
+from provenance import verifier
+
 # Les chemins sont résolus depuis l'emplacement du script et non depuis le
 # répertoire courant, qui dépend de l'endroit d'où la commande est lancée.
 RACINE = Path(__file__).resolve().parent.parent
@@ -95,6 +97,11 @@ def main() -> None:
     # qui dit quoi faire.
     if not source.exists():
         raise FileNotFoundError(f"Source absente : {source}. Lancer 01_download.py.")
+
+    # La source doit être celle qu'a téléchargée 01_download.py, sinon les
+    # tables produites ne correspondraient pas au manifeste affiché en fin de
+    # rapport.
+    verifier(SORTIE / "manifeste.json", source, "prenoms")
 
     SORTIE.mkdir(parents=True, exist_ok=True)
 

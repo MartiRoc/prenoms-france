@@ -3,3 +3,13 @@
 url = "https://www.insee.fr/fr/statistiques/fichier/8595130/prenoms-2025.parquet"
 millesime = 2025
 fichier = "prenoms-2025.parquet"
+
+[source.departements]
+url = "https://www.insee.fr/fr/statistiques/fichier/8740222/v_departement_2026.csv"
+millesime = 2026
+fichier = "departements-2026.csv"
+
+[archetypes]
+seuil_naissances = 2000
+nombre = 5
+libelles = ["Groupe 1", "Groupe 2", "Groupe 3", "Groupe 4", "Groupe 5"]

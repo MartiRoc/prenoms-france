@@ -12,7 +12,7 @@ téléchargement, supprimer le fichier dans data/raw.
 import hashlib
 import json
 import tomllib
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import requests
@@ -104,7 +104,7 @@ def main() -> None:
 
     # Horodatage en UTC : comparable entre machines, insensible au changement
     # d'heure.
-    horodatage = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    horodatage = datetime.now(UTC).isoformat(timespec="seconds")
 
     sources = []
 
