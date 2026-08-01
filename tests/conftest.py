@@ -29,6 +29,7 @@ PRODUCTEURS = {
     "prenom_archetype": "04_archetypes.py",
     "profil_archetype": "04_archetypes.py",
     "d_departement": "05_geographie.py",
+    "f_naissances_dep": "05_geographie.py",
     "f_specificite": "05_geographie.py",
 }
 

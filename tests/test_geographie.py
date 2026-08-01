@@ -53,6 +53,20 @@ def test_la_corse_est_decoupee_en_deux(scalaire):
     assert codes == 2
 
 
+def test_le_total_departemental_est_renseigne(scalaire):
+    """La colonne sert de dénominateur à la fréquence pour 10 000 naissances.
+
+    Une valeur nulle passerait inaperçue dans Power BI, où la division rend un
+    résultat vide plutôt qu'une erreur. La carte se viderait alors sans que rien
+    ne signale d'où vient le problème.
+    """
+    manquants = scalaire("""
+        SELECT COUNT(*) FROM d_departement
+        WHERE naissances_departement IS NULL OR naissances_departement <= 0
+    """)
+    assert manquants == 0
+
+
 # ---------------------------------------------------------------------------
 # 2. Contrats de clé et intégrité référentielle
 # ---------------------------------------------------------------------------
@@ -171,3 +185,54 @@ def test_la_part_creuse_reste_faible(scalaire):
         SELECT (SUM(observe) - SUM(attendu)) / SUM(observe) FROM f_specificite
     """)
     assert 0 <= creux < 0.10
+
+
+# ---------------------------------------------------------------------------
+# 5. Table annuelle départementale
+# ---------------------------------------------------------------------------
+def test_le_grain_de_f_naissances_dep_est_respecte(scalaire):
+    """Une ligne par couple, département et année.
+
+    Un doublon viendrait d'une jointure sur le prénom seul, qui multiplierait
+    les lignes des 3 177 prénoms portés par les deux sexes.
+    """
+    doublons = scalaire("""
+        SELECT COUNT(*) FROM (
+            SELECT prenom_id, dep_code, annee FROM f_naissances_dep
+            GROUP BY 1, 2, 3 HAVING COUNT(*) > 1)
+    """)
+    assert doublons == 0
+
+
+def test_les_deux_grains_departementaux_concordent(scalaire):
+    """L'agrégation sur l'année doit redonner exactement f_specificite.
+
+    Les deux tables décrivent les mêmes naissances à deux grains différents.
+    Cette redondance est assumée, l'indice ayant besoin du cumul et la page de
+    synthèse ayant besoin de l'année. Elle n'est tenable que si un test la
+    verrouille, couple par couple et non sur le seul total général.
+    """
+    ecarts = scalaire("""
+        SELECT COUNT(*) FROM (
+            SELECT prenom_id, dep_code, SUM(effectif) AS cumul
+            FROM f_naissances_dep
+            GROUP BY prenom_id, dep_code
+        ) a
+        JOIN f_specificite s USING (prenom_id, dep_code)
+        WHERE a.cumul <> s.observe
+    """)
+    assert ecarts == 0
+
+
+def test_les_annees_couvrent_la_meme_plage_que_le_national(scalaire):
+    """Les deux tables de faits se filtrent par la même dimension année.
+
+    Une plage plus étroite au niveau départemental laisserait des années sans
+    aucune donnée sur la page de synthèse, alors que la courbe nationale, elle,
+    continuerait de les afficher.
+    """
+    hors_plage = scalaire("""
+        SELECT COUNT(*) FROM (SELECT DISTINCT annee FROM f_naissances_dep)
+        ANTI JOIN d_annee USING (annee)
+    """)
+    assert hors_plage == 0

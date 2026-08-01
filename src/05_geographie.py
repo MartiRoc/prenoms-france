@@ -3,7 +3,11 @@
 Relit le fichier des prénoms, que l'étape 2 avait filtré sur le niveau national,
 et le joint au Code officiel géographique pour obtenir les libellés.
 
-Écrit d_departement.parquet et f_specificite.parquet.
+Écrit d_departement.parquet, f_naissances_dep.parquet et f_specificite.parquet.
+
+La table annuelle porte le grain le plus fin de l'étape, un couple par
+département et par année. Les deux autres en dérivent, ce qui rend leur
+cohérence vraie par construction plutôt que vérifiée après coup.
 
 La table de spécificité stocke l'observé et l'attendu, pas leur rapport. Un ratio
 ne s'additionne pas, donc l'indice se calcule dans Power BI comme le rapport des
@@ -27,7 +31,7 @@ SQL = Path(__file__).resolve().parent / "05_geographie.sql"
 
 # La table intermédiaire naissances_dep n'est pas exportée : elle ne sert qu'aux
 # contrôles, et f_specificite en contient déjà les effectifs.
-A_EXPORTER = ["d_departement", "f_specificite"]
+A_EXPORTER = ["d_departement", "f_naissances_dep", "f_specificite"]
 
 
 # ---------------------------------------------------------------------------
@@ -114,6 +118,21 @@ def controler(con: duckdb.DuckDBPyConnection) -> None:
         SELECT COUNT(*) FROM f_specificite WHERE attendu <= 0 OR observe <= 0
     """).fetchone()[0]
 
+    # Les deux grains décrivent les mêmes naissances. Un écart signalerait que
+    # l'agrégation sur l'année a perdu des lignes en chemin.
+    ecart_grain = con.sql("""
+        SELECT (SELECT SUM(effectif) FROM f_naissances_dep)
+             - (SELECT SUM(observe) FROM naissances_dep)
+    """).fetchone()[0]
+
+    # Le total stocké dans la dimension doit redonner celui des faits. Une
+    # jointure manquée le laisserait à zéro, et toutes les fréquences par
+    # département seraient vides sans qu'aucune erreur n'apparaisse.
+    ecart_total = con.sql("""
+        SELECT (SELECT SUM(naissances_departement) FROM d_departement)
+             - (SELECT SUM(observe) FROM naissances_dep)
+    """).fetchone()[0]
+
     # Le seul contrôle qui relie la sortie à la source, et le seul capable
     # d'attraper un filtre de niveau géographique oublié. Les autres portent sur
     # une cohérence interne, qui reste parfaite sur des données déjà abîmées :
@@ -131,6 +150,8 @@ def controler(con: duckdb.DuckDBPyConnection) -> None:
     assert perdues == 0, f"{perdues} naissances perdues à la jointure"
     assert marges[0] == marges[1] == marges[2], f"Marges incohérentes : {marges}"
     assert negatifs == 0, f"{negatifs} cellules à effectif nul ou négatif"
+    assert ecart_grain == 0, f"Écart entre les deux grains : {ecart_grain}"
+    assert ecart_total == 0, f"Total départemental incohérent : {ecart_total}"
     assert ecart_source == 0, f"Écart avec la source : {ecart_source}"
     assert 0 <= creux < 0.10, f"Table anormalement creuse : {creux:.1%}"
     print(f"Contrôles : OK (part creuse {creux:.1%})")
