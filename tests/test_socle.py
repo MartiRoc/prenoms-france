@@ -102,7 +102,7 @@ def test_tous_les_prenoms_de_la_source_sont_presents(scalaire):
 # Ces tests ne vérifient pas le code. Ils signalent qu'un nouveau millésime a
 # changé les règles du jeu, ce qui se découvre autrement en constatant des
 # résultats étranges plusieurs jours plus tard.
-def test_les_effectifs_restent_des_multiples_de_cinq(scalaire):
+def test2_les_effectifs_restent_des_multiples_de_cinq(scalaire):
     """Arrondi appliqué par l'Insee pour protéger l'anonymat. Sa disparition
     rendrait les seuils de diffusion du rapport inutiles."""
     hors_regle = scalaire("SELECT COUNT(*) FROM f_naissances WHERE effectif % 5 <> 0")

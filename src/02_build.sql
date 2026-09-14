@@ -1,6 +1,6 @@
 -- Construction du socle national à partir du fichier des prénoms de l'Insee.
 -- Exécuté par src/02_build.py, qui fournit la variable chemin_source.
--- Niveau départemental et indice de spécificité : hors périmètre, voir J3.
+-- Niveau départemental et indice de spécificité : hors périmètre, voir 05_geographie.sql.
 --
 -- Le grain de chaque table est indiqué dans son en-tête de section. C'est la
 -- seule information qu'il faut avoir en tête pour relire ce fichier.

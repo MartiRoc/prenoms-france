@@ -3,7 +3,6 @@
 Un rapport Power BI sur 125 ans de prénoms en France, construit sur un pipeline
 Python et DuckDB testé et reproductible à l'identique.
 
-<!-- CAPTURE : page 1, avec un prénom parlant plutôt que la valeur par défaut -->
 ![Page 1 du rapport](docs/capture-page-1.png)
 
 ---
@@ -26,7 +25,7 @@ Python et DuckDB testé et reproductible à l'identique.
 
 ## Le pipeline
 
-Cinq étapes, un module partagé, onze fichiers Parquet en sortie.
+Cinq étapes, un module partagé, 12 fichiers Parquet en sortie.
 
 | fichier | rôle |
 |---|---|

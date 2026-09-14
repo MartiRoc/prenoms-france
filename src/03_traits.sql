@@ -8,9 +8,10 @@
 -- 1. Prénoms éligibles. Grain : un couple (prénom, sexe)
 -- ---------------------------------------------------------------------------
 -- Sous le seuil, un prénom n'a pas de trajectoire mais quelques points isolés :
--- moins de 1 000 naissances cumulées correspond à une dizaine d'années
--- renseignées en moyenne, parfois une seule. Les prénoms écartés restent dans
--- le rapport, ils n'y reçoivent simplement pas d'archétype.
+-- une dizaine d'années renseignées en moyenne, parfois une seule. 
+-- Le seuil est déclaré dans config/sources.toml, section [archetypes]. 
+-- Les prénoms écartés restent dans le rapport, ils ne reçoivent 
+-- juste pas d'archétype.
 CREATE OR REPLACE TABLE eligibles AS
 SELECT prenom_id, prenom_affichage, libelle_segment, sexe_code, naissances_totales
 FROM d_prenom

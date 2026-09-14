@@ -156,7 +156,7 @@ def test_le_niveau_geographique_a_bien_ete_filtre(scalaire):
 # ---------------------------------------------------------------------------
 # 4. Cohérence de l'indice
 # ---------------------------------------------------------------------------
-def test_les_effectifs_restent_des_multiples_de_cinq(scalaire):
+def test1_les_effectifs_restent_des_multiples_de_cinq(scalaire):
     """Arrondi de l'Insee, présent aussi au niveau départemental."""
     hors_regle = scalaire("SELECT COUNT(*) FROM f_specificite WHERE observe % 5 <> 0")
     assert hors_regle == 0
