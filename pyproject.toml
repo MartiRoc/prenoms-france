@@ -1,7 +1,7 @@
 [project]
 name = "prenoms-powerbi"
 version = "0.1.0"
-description = "Add your description here"
+description = "Pipeline Python / SQL (DuckDB) et rapport Power BI sur les prénoms français, 1900-2025"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [

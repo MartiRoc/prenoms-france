@@ -1,7 +1,7 @@
 # Prénoms français, 1900-2025
 
-Un rapport Power BI sur 125 ans de prénoms en France, construit sur un pipeline
-Python et DuckDB testé et reproductible à l'identique.
+Un rapport Power BI des prénoms en France de 1900 à 2025, construit via un pipeline
+Python et SQL (DuckDB) reproductible.
 
 ![Page 1 du rapport](docs/capture-page-1.png)
 
@@ -11,10 +11,10 @@ Python et DuckDB testé et reproductible à l'identique.
 
 | page | question |
 |---|---|
-| Et le vôtre ? | à quoi ressemble la trajectoire d'un prénom, et où il est le plus fréquent |
-| Y a-t-il encore des prénoms courants ? | quels prénoms dominaient une période et un territoire, et comment la diversité a évolué |
-| Quels prénoms sont d'ici ? | quels prénoms sont caractéristiques d'un département, et lesquels ont la composition la plus singulière |
-| Notes de méthode | ce que les données ne disent pas |
+| Votre prénom, d'où vient-il et quand ? | à quoi ressemble la trajectoire d'un prénom, et où il est le plus fréquent dans le temps et l'espace |
+| Vers un affaiblissement des tendances ? | quels prénoms dominaient une période et un territoire, et comment la diversité a évolué |
+| Quels prénoms sont donnés ici et là ? | quels prénoms sont caractéristiques d'un département et quels départements ont la composition la plus singulière |
+| Notes de méthode | infos sur les sources, les indicateurs et les limites |
 
 ## Les données
 
@@ -32,7 +32,7 @@ Cinq étapes, un module partagé, 12 fichiers Parquet en sortie.
 | `01_download.py` | télécharge les sources déclarées, écrit `manifeste.json` |
 | `02_build.py` et `.sql` | socle national, schéma en étoile |
 | `03_traits.py` et `.sql` | profils normalisés et six traits de forme |
-| `04_archetypes.py` | classification en cinq groupes |
+| `04_archetypes.py` | classification en cinq groupes (en construction) |
 | `05_geographie.py` et `.sql` | niveau départemental et indice de spécificité |
 | `provenance.py` | vérifie l'empreinte des sources contre le manifeste |
 
