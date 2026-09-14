@@ -3,4 +3,5 @@ __pycache__/
 data/raw/*
 !data/raw/.gitkeep
 src/bac_a_sable.py
+src/00_verif.py
 docu_pour_moi/*

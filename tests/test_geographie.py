@@ -67,6 +67,19 @@ def test_le_total_departemental_est_renseigne(scalaire):
     assert manquants == 0
 
 
+def test_chaque_departement_porte_une_region(scalaire):
+    """La jointure est écrite en dur, donc rien ne la vérifie côté source.
+
+    Un code de région apparu au Code officiel géographique sans être ajouté à
+    la liste laisserait un libellé vide, et le segment de la page de synthèse
+    afficherait une entrée sans nom.
+    """
+    orphelins = scalaire("""
+        SELECT COUNT(*) FROM d_departement WHERE region_libelle IS NULL
+    """)
+    assert orphelins == 0
+
+
 # ---------------------------------------------------------------------------
 # 2. Contrats de clé et intégrité référentielle
 # ---------------------------------------------------------------------------

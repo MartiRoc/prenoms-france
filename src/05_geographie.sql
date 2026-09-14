@@ -133,16 +133,44 @@ JOIN d_prenom p USING (prenom, sexe_code);
 -- table construite plus haut. La jointure externe et la valeur de repli sont
 -- défensives : un département sans aucune naissance publiée resterait présent
 -- sur la carte, avec une fréquence vide plutôt qu'une zone absente.
+--
+-- Les 18 libellés de région sont écrits ici plutôt que téléchargés. Le Code
+-- officiel géographique les publie dans un fichier séparé, mais déclarer une
+-- troisième source coûterait un téléchargement, une empreinte au manifeste et
+-- un contrôle de provenance, pour 18 lignes que la réforme de 2016 a figées.
 CREATE OR REPLACE TABLE d_departement AS
-SELECT c.DEP                AS dep_code,
-       c.LIBELLE            AS dep_libelle,
-       c.REG                AS region_code,
-       LENGTH(c.DEP) = 3    AS est_dom,
-       COALESCE(t.total, 0) AS naissances_departement
-FROM cog c
-LEFT JOIN (
+WITH regions (region_code, region_libelle) AS (
+    VALUES ('01', 'Guadeloupe'),
+           ('02', 'Martinique'),
+           ('03', 'Guyane'),
+           ('04', 'La Réunion'),
+           ('06', 'Mayotte'),
+           ('11', 'Île-de-France'),
+           ('24', 'Centre-Val de Loire'),
+           ('27', 'Bourgogne-Franche-Comté'),
+           ('28', 'Normandie'),
+           ('32', 'Hauts-de-France'),
+           ('44', 'Grand Est'),
+           ('52', 'Pays de la Loire'),
+           ('53', 'Bretagne'),
+           ('75', 'Nouvelle-Aquitaine'),
+           ('76', 'Occitanie'),
+           ('84', 'Auvergne-Rhône-Alpes'),
+           ('93', 'Provence-Alpes-Côte d''Azur'),
+           ('94', 'Corse')
+),
+totaux AS (
     SELECT dep_code,
            SUM(observe)::BIGINT AS total
     FROM naissances_dep
     GROUP BY dep_code
-) t ON t.dep_code = c.DEP;
+)
+SELECT c.DEP                     AS dep_code,
+       c.LIBELLE                 AS dep_libelle,
+       c.REG                     AS region_code,
+       r.region_libelle,
+       LENGTH(c.DEP) = 3         AS est_dom,
+       COALESCE(t.total, 0)      AS naissances_departement
+FROM cog c
+LEFT JOIN totaux t ON t.dep_code = c.DEP
+LEFT JOIN regions r ON r.region_code = c.REG;
