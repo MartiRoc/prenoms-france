@@ -7,15 +7,12 @@ Python et SQL (DuckDB) reproductible.
 ![Page 2 du rapport](docs/p2.png)
 ![Page 3 du rapport](docs/p3.png)
 
-<div class="grid" markdown>
-
-![Image title](docs/p2.png)
-
-![Image title](docs/p3.png)
-
-</div>
-
 ---
+
+## Ouvrir le rapport
+
+Télécharger `tableau_de_bord/prenoms_france.pbix` et l'ouvrir avec Power BI
+Desktop ou Power BI service (navigateur). Le fichier fonctionne tel quel. Aucune version en ligne n'est publiée, faute de licence.
 
 ## Ce que montre le rapport
 
@@ -23,7 +20,7 @@ Python et SQL (DuckDB) reproductible.
 |---|---|
 | Votre prénom en France depuis 1900 | à quoi ressemble la trajectoire d'un prénom, et où il est le plus fréquent dans le temps et l'espace |
 | Évolution des tendances | quels prénoms dominaient une période et un territoire, et comment la diversité a évolué |
-| Spécificités départementales | quels prénoms sont caractéristiques d'un département et quels départements ont la composition la plus singulière |
+| Spécificités départementales | quels prénoms sont caractéristiques d'un département et quels départements ont des tendances singulières |
 | Notes de méthode | infos sur les sources, les indicateurs et les limites |
 
 ## Les données
@@ -35,7 +32,7 @@ Python et SQL (DuckDB) reproductible.
 
 ## Le pipeline
 
-Cinq étapes, un module partagé, 12 fichiers Parquet en sortie.
+Python et SQL, cinq étapes, 12 fichiers (tables) Parquet en sortie.
 
 | fichier | rôle |
 |---|---|
@@ -58,69 +55,62 @@ uv run python src/05_geographie.py
 uv run pytest -q
 ```
 
-Le pipeline est idempotent bit à bit : deux exécutions produisent des fichiers
-identiques. La suite compte 48 tests, dont plusieurs comparent les sorties à la
-source plutôt qu'à elles-mêmes.
+Les sorties sont versionnées dans `data/out`. N'importe qui peut recalculer
+les chiffres montrés dans le tableau de bord sans rien télécharger chez l'Insee.
 
-Les sorties sont versionnées dans `data/out`. N'importe qui peut donc recalculer
-les chiffres annoncés ici sans rien télécharger chez l'Insee.
+Pour actualiser les données du tableau de bord il faut régler (dans Power BI) le paramètre `DossierDonnees` sur le chemin local de `data/out` (Accueil > Transformer les données > Modifier les paramètres).
 
 ## Décisions de méthode
 
-**Le grain est le couple prénom-sexe.** Jamais le prénom seul, sous peine de
-fusionner 3 177 prénoms mixtes.
+**Une ligne par prénom et par sexe, jamais par prénom seul.** 3 177 prénoms sont
+donnés aux deux sexes, avec des trajectoires souvent opposées. Camille culmine en
+1910 chez les garçons et en 1998 chez les filles.
 
-**L'indice de spécificité stocke deux colonnes, pas un ratio.** Un rapport ne
-s'additionne pas : la moyenne des indices de deux départements ne vaut pas
-l'indice de leur regroupement. En stockant l'observé et l'attendu, la division
-se fait au niveau où le lecteur regarde et reste juste à toute maille.
+**L'indice de spécificité est stocké en deux colonnes, l'observé et l'attendu.**
+Power BI en fait le rapport au moment de l'affichage. Stocker le rapport
+lui-même serait faux dès qu'on regroupe des départements, parce qu'une moyenne
+de rapports n'est pas le rapport des totaux.
 
-**L'univers de référence est explicite.** Observé et attendu sont calculés dans
-le seul monde départemental. Les mélanger aux totaux nationaux biaiserait tous
-les indices d'environ 9 % sans que rien ne le signale.
+**Observé et attendu sont calculés sur les seules données départementales.** Les
+mélanger aux totaux nationaux tirerait tous les indices vers le bas d'environ
+9 %.
 
-**La couverture départementale n'est pas constante.** Le seuil de publication
-de l'Insee écarte les couples sous 5 naissances, et cette censure mord d'autant
-plus fort que la diversité des prénoms augmente : 96,4 % de couverture sur
-1900-1924, 80,7 % sur 2000-2024. La diversité et la concentration sont donc
-calculées au niveau national, pas départemental.
+**La diversité et la concentration sont mesurées au niveau national.** L'Insee
+ne publie pas les prénoms donnés moins de cinq fois dans un département. Comme
+les prénoms rares se multiplient, ce seuil écarte une part croissante des
+naissances : 96,4 % de couverture sur 1900-1924, 80,7 % sur 2000-2024. Un calcul
+départemental montrerait une chute de la concentration plus faible qu'en réalité.
 
-**La géographie est celle du dernier millésime.** Les départements 92, 93 et 94
-portent des effectifs dès 1964, avant leur création en 1968. Les comparaisons
-sont homogènes sur toute la période.
+**Toutes les naissances sont classées dans la géographie actuelle.** Une personne
+née en 1964 sur le territoire de l'actuel 92 y est comptée, alors que ce
+département n'existait pas avant 1968. Chaque département désigne donc le même
+territoire sur toute la période.
 
-**Trois indicateurs distincts, définis séparément.** La fréquence pour 10 000
-répond à « ce prénom est-il courant ici ». L'indice de spécificité, un quotient
-de localisation, répond à « ce prénom est-il d'ici ». Le score départemental
-mesure l'écart entre la composition de prénoms d'un département et la moyenne
-nationale. Marie est fréquente partout et spécifique nulle part ; Toussainte est
-rare partout, y compris en Corse, et pourtant spécifique de la Corse.
+**Trois indicateurs géographiques, à ne pas confondre.** La fréquence pour
+10 000 dit si un prénom est courant dans un département. L'indice de spécificité
+dit s'il y est plus donné que la taille du département ne le laisserait
+penser. Le score départemental dit à quel point un département s'écarte de la
+composition nationale. Marie est courante dans toute la France et n'est
+caractéristique d'aucun département tandis que Toussainte est rare, y compris en Corse,
+et pourtant très caractéristique de la Corse.
 
 ## Limites
 
-- Effectifs arrondis au multiple de 5, aucun couple publié sous 5 naissances.
-- Exhaustivité non garantie avant 1946. Les 87,6 millions ne sont pas le nombre
-  de naissances en France sur la période.
-- L'échelle de couleur de la carte de la page 1 est propre au prénom affiché.
-- Un prénom entièrement concentré dans un département atteint mécaniquement
-  l'indice maximum, d'où le filtre appliqué au classement de la page 3.
-- Chaque niveau géographique est arrondi au multiple de 5 indépendamment : la
-  somme des départements ne retombe pas sur le total national. Gabriel compte
-  4 625 naissances en 2025 au niveau France, 4 645 en sommant les départements.
-- Les classements régionaux agrègent les données départementales. Le niveau
-  régional publié par l'Insee couvre 84,8 millions de naissances contre 80,2 :
-  le choix retenu garantit qu'un total régional est exactement la somme des
-  départements affichés ailleurs, au prix de cinq points de couverture.
-
-## Ouvrir le rapport
-
-Télécharger `tableau_de_bord/prenoms_france.pbix` et l'ouvrir avec Power BI
-Desktop ou Power BI service (navigateur). Le fichier embarque les données, il fonctionne tel quel. Aucune version
-en ligne n'est publiée, faute de licence.
-
-Pour actualiser le modèle depuis les Parquet du dépôt, régler le paramètre
-`DossierDonnees` sur le chemin local de `data/out`, par Transformer les données,
-Gérer les paramètres.
+- Les effectifs sont arrondis au multiple de 5, et rien n'est publié sous 5
+  naissances.
+- Chaque niveau géographique est arrondi séparément, donc la somme des
+  départements ne retombe pas sur le total national. Gabriel compte 4 625
+  naissances en 2025 au niveau France, 4 645 en sommant les départements.
+- Avant 1946, le fichier ne recense qu'une partie des naissances. Les
+  87,6 millions ne sont pas le nombre de naissances en France sur la période.
+- Sur la carte de la page 1, l'échelle de couleur se recalcule à chaque prénom
+  affiché. Deux prénoms ne se comparent donc pas d'une couleur à l'autre.
+- Un prénom donné dans un seul département atteint mécaniquement l'indice
+  maximum. Le classement de la page 3 écarte ces cas.
+- Les classements par région agrègent les données départementales. L'Insee
+  publie aussi un niveau régional, qui couvre 84,8 millions de naissances contre
+  80,2 : le choix retenu coûte cinq points de couverture, mais garantit qu'un
+  total régional est exactement la somme des départements affichés ailleurs.
 
 ## Sources et licences
 
