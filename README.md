@@ -3,7 +3,7 @@
 Un rapport Power BI des prénoms en France de 1900 à 2025, construit via un pipeline
 Python et SQL (DuckDB) reproductible.
 
-![Page 1 du rapport](docs/capture-page-1.png)
+![Page 1 du rapport](docs/p1_Lucas.png)
 ![Page 2 du rapport](docs/p2.png)
 ![Page 3 du rapport](docs/p3.png)
 
@@ -18,9 +18,9 @@ Desktop ou Power BI service (navigateur). Le fichier fonctionne tel quel. Aucune
 
 | page | question |
 |---|---|
-| Votre prénom en France depuis 1900 | à quoi ressemble la trajectoire d'un prénom, et où il est le plus fréquent dans le temps et l'espace |
-| Évolution des tendances | quels prénoms dominaient une période et un territoire, et comment la diversité a évolué |
-| Spécificités départementales | quels prénoms sont caractéristiques d'un département et quels départements ont des tendances singulières |
+| 1 | Votre prénom est-il (a-t-il) été populaire en France ? |
+| 2 | Quels ont-été les tendances depuis 1900 ? |
+| 3 | Existe-t-il de spécificités départementales marquées ? |
 | Notes de méthode | infos sur les sources, les indicateurs et les limites |
 
 ## Les données
@@ -60,7 +60,7 @@ les chiffres montrés dans le tableau de bord sans rien télécharger chez l'Ins
 
 Pour actualiser les données du tableau de bord il faut régler (dans Power BI) le paramètre `DossierDonnees` sur le chemin local de `data/out` (Accueil > Transformer les données > Modifier les paramètres).
 
-## Décisions de méthode
+## Remarques
 
 **Une ligne par prénom et par sexe, jamais par prénom seul.** 3 177 prénoms sont
 donnés aux deux sexes, avec des trajectoires souvent opposées. Camille culmine en
@@ -114,6 +114,8 @@ et pourtant très caractéristique de la Corse.
 
 ## Sources et licences
 
-- Fichier des prénoms, Insee, millésime 2025, [Licence ouverte](https://www.etalab.gouv.fr/licence-ouverte-open-licence/)
-- Contours départementaux, IGN Admin Express, tracés du millésime 2018, Licence ouverte, dans `geo/`
-- Code officiel géographique, Insee, millésime 2026
+- Fichier des prénoms, Insee, millésime 2025, Licence ouverte
+- Code officiel géographique, Insee, millésime 2026, Licence ouverte
+- Contours départementaux, IGN Admin Express, tracés du millésime 2018, Licence ouverte, dans geo/
+
+Le code de ce dépôt est sous licence MIT. Les données de data/out et les contours de geo/ restent sous leur licence d'origine.
