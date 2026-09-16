@@ -4,6 +4,16 @@ Un rapport Power BI des prénoms en France de 1900 à 2025, construit via un pip
 Python et SQL (DuckDB) reproductible.
 
 ![Page 1 du rapport](docs/capture-page-1.png)
+![Page 2 du rapport](docs/p2.png)
+![Page 3 du rapport](docs/p3.png)
+
+<div class="grid" markdown>
+
+![Image title](docs/p2.png)
+
+![Image title](docs/p3.png)
+
+</div>
 
 ---
 
@@ -11,9 +21,9 @@ Python et SQL (DuckDB) reproductible.
 
 | page | question |
 |---|---|
-| Votre prénom, d'où vient-il et quand ? | à quoi ressemble la trajectoire d'un prénom, et où il est le plus fréquent dans le temps et l'espace |
-| Vers un affaiblissement des tendances ? | quels prénoms dominaient une période et un territoire, et comment la diversité a évolué |
-| Quels prénoms sont donnés ici et là ? | quels prénoms sont caractéristiques d'un département et quels départements ont la composition la plus singulière |
+| Votre prénom en France depuis 1900 | à quoi ressemble la trajectoire d'un prénom, et où il est le plus fréquent dans le temps et l'espace |
+| Évolution des tendances | quels prénoms dominaient une période et un territoire, et comment la diversité a évolué |
+| Spécificités départementales | quels prénoms sont caractéristiques d'un département et quels départements ont la composition la plus singulière |
 | Notes de méthode | infos sur les sources, les indicateurs et les limites |
 
 ## Les données
@@ -105,7 +115,7 @@ rare partout, y compris en Corse, et pourtant spécifique de la Corse.
 ## Ouvrir le rapport
 
 Télécharger `tableau_de_bord/prenoms_france.pbix` et l'ouvrir avec Power BI
-Desktop. Le fichier embarque les données, il fonctionne tel quel. Aucune version
+Desktop ou Power BI service (navigateur). Le fichier embarque les données, il fonctionne tel quel. Aucune version
 en ligne n'est publiée, faute de licence.
 
 Pour actualiser le modèle depuis les Parquet du dépôt, régler le paramètre
